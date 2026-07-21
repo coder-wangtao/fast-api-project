@@ -26,7 +26,7 @@ def set_operation_log_enabled(flag: bool) -> None:
 
 class OperationLogMiddleware(BaseHTTPMiddleware):
     """操作日志记录中间件"""
-
+    # 请求进入业务逻辑前后“插一脚”，自动记操作日志
     def __init__(self, app, skip_paths: Optional[list] = None):
         super().__init__(app)
         # 跳过记录日志的路径
@@ -53,7 +53,7 @@ class OperationLogMiddleware(BaseHTTPMiddleware):
             "/api/auth/change-password": ActionType.USER_MANAGEMENT,  # 🔧 添加修改密码操作类型
             "/api/reports/": ActionType.REPORT_GENERATION,
         }
-
+    #中间件的核心方法 dispatch：每个 HTTP 请求都会经过这里，决定是否记录操作日志。
     async def dispatch(self, request: Request, call_next):
         # 检查是否需要跳过记录
         if self._should_skip_logging(request):

@@ -3,8 +3,10 @@ from pathlib import Path
 import uvicorn
 from app.core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
+import time
+from app.routers import  health
 
-
+from app.middleware.operation_log_middleware import OperationLogMiddleware
 
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
@@ -35,7 +37,18 @@ app.add_middleware(
 )
 
 
-# app.add_middleware(OperationLogMiddleware)
+app.add_middleware(OperationLogMiddleware)
+
+# 测试端点 - 验证中间件是否工作
+@app.get("/api/test-log")
+async def test_log():
+    """测试日志中间件是否工作"""
+    print("🧪 测试端点被调用 - 这条消息应该出现在控制台")
+    return {"message": "测试成功", "timestamp": time.time()}
+
+# 注册路由
+app.include_router(health.router, prefix="/api", tags=["health"])
+
 
 @app.get("/")
 async def root():
