@@ -16,7 +16,7 @@ def get_version() -> str:
     return "0.1.16"  # 默认版本号
 
 
-@router.get("/  ")
+@router.get("/health")
 async def health():
     """健康检查接口 - 前端使用"""
     return {
