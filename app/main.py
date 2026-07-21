@@ -1,10 +1,12 @@
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request
 from pathlib import Path
 import uvicorn
 from app.core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
 import time
 from app.routers import  health
+from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
 
@@ -38,6 +40,52 @@ app.add_middleware(
 
 
 app.add_middleware(OperationLogMiddleware)
+
+
+
+# 请求日志中间件
+@app.middleware("http") #注册 HTTP 中间件。
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+
+    # 跳过健康检查和静态文件请求的日志
+    if request.url.path in ["/health", "/favicon.ico"] or request.url.path.startswith("/static"):
+        response = await call_next(request)
+        return response
+
+    # 使用webapi logger记录请求
+    logger = logging.getLogger("webapi")
+    logger.info(f"🔄 {request.method} {request.url.path} - 开始处理")
+
+    response = await call_next(request)
+    process_time = time.time() - start_time
+
+    # 记录请求完成
+    status_emoji = "✅" if response.status_code < 400 else "❌"
+    logger.info(f"{status_emoji} {request.method} {request.url.path} - 状态: {response.status_code} - 耗时: {process_time:.3f}s")
+
+    return response
+
+
+# 全局异常处理
+# 请求ID/Trace-ID 中间件（需作为最外层，放在函数式中间件之后）
+from app.middleware.request_id import RequestIDMiddleware
+app.add_middleware(RequestIDMiddleware)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logging.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": {
+                "code": "INTERNAL_SERVER_ERROR",
+                "message": "Internal server error occurred",
+                "request_id": getattr(request.state, "request_id", None)
+            }
+        }
+    )
+
 
 # 测试端点 - 验证中间件是否工作
 @app.get("/api/test-log")
