@@ -11,8 +11,7 @@ from app.routers import  health
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth
-
+from app.routers import auth_db as auth,analysis
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
     try:

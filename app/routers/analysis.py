@@ -40,7 +40,7 @@ class BatchAnalyzeRequest(BaseModel):
 @router.post("/single", response_model=Dict[str, Any])
 async def submit_single_analysis(
     request: SingleAnalysisRequest,
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks, #接口先快速返回响应，再在后台继续跑耗时工作（比如真正跑股票分析）
     user: dict = Depends(get_current_user)
 ):
     """提交单股分析任务 - 使用 BackgroundTasks 异步执行"""
