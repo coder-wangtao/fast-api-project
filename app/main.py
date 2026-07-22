@@ -1,14 +1,17 @@
 import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from pathlib import Path
 import uvicorn
 from app.core.config import settings
+from app.core.database import init_database, close_database
 from fastapi.middleware.cors import CORSMiddleware
 import time
 from app.routers import  health
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
+from app.routers import auth_db as auth
 
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
@@ -20,13 +23,24 @@ def get_version() -> str:
         pass
     return "1.0.0"  # 默认版本号
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """应用生命周期：启动时初始化数据库，关闭时释放连接"""
+    await init_database()
+    try:
+        yield
+    finally:
+        await close_database()
+
+
 app = FastAPI(
     title="TradingAgents-CN API",
     description="股票分析与批量队列系统 API",
     version=get_version(),
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
-    # lifespan=lifespan
+    lifespan=lifespan,
 )
 
 
@@ -40,8 +54,6 @@ app.add_middleware(
 
 
 app.add_middleware(OperationLogMiddleware)
-
-
 
 # 请求日志中间件
 @app.middleware("http") #注册 HTTP 中间件。
@@ -96,6 +108,8 @@ async def test_log():
 
 # 注册路由
 app.include_router(health.router, prefix="/api", tags=["health"])
+app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
+app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 
 
 @app.get("/")

@@ -1,5 +1,5 @@
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 import os
 from pathlib import Path
@@ -7,6 +7,12 @@ import re
 import getpass
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
     # 基础配置
     DEBUG: bool = Field(default=True)
     HOST: str = Field(default="0.0.0.0")
@@ -21,6 +27,7 @@ class Settings(BaseSettings):
     MONGODB_DATABASE: str = Field(default="tradingagentscn")
     MONGODB_DATABASE_SCOPE: str = Field(default="auto")
     MONGODB_DATABASE_INSTANCE: str = Field(default="")
+    MONGODB_AUTH_SOURCE: str = Field(default="admin")
 
     REDIS_HOST: str = Field(default="localhost")
     REDIS_PORT: int = Field(default=6379)
@@ -36,8 +43,13 @@ class Settings(BaseSettings):
 
 
     JWT_SECRET: str = Field(default="change-me-in-production")
+    JWT_ALGORITHM: str = Field(default="HS256")
 
     LOG_LEVEL: str = Field(default="INFO")
+    TIMEZONE: str = Field(default="Asia/Shanghai")
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60)
+
 
     @property
     def MONGO_URI(self) -> str:
@@ -46,6 +58,13 @@ class Settings(BaseSettings):
             return f"mongodb://{self.MONGODB_USERNAME}:{self.MONGODB_PASSWORD}@{self.MONGODB_HOST}:{self.MONGODB_PORT}/{self.MONGO_DB}?authSource={self.MONGODB_AUTH_SOURCE}"
         else:
             return f"mongodb://{self.MONGODB_HOST}:{self.MONGODB_PORT}/{self.MONGO_DB}"
+
+    @property
+    def REDIS_URL(self) -> str:
+        """构建 Redis URL"""
+        if self.REDIS_PASSWORD:
+            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
     @property
     def MONGO_DB(self) -> str:
