@@ -80,8 +80,6 @@ class DatabaseManager:
         if self.redis_enabled:
             self.logger.info(f"Redis配置: {self.redis_config['host']}:{self.redis_config['port']}")
     
-
-    
     def _detect_mongodb(self) -> Tuple[bool, str]:
         """检测MongoDB是否可用"""
         # 首先检查是否启用

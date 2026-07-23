@@ -7,11 +7,10 @@ from app.core.config import settings
 from app.core.database import init_database, close_database
 from fastapi.middleware.cors import CORSMiddleware
 import time
-from app.routers import  health
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth,analysis
+from app.routers import auth_db as auth,health, internal_messages,social_media
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
     try:
@@ -108,7 +107,12 @@ async def test_log():
 # 注册路由
 app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
-app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
+# app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
+
+
+app.include_router(news_data.router, tags=["news-data"])
+app.include_router(social_media.router, tags=["social-media"])
+app.include_router(internal_messages.router, tags=["internal-messages"])
 
 
 @app.get("/")

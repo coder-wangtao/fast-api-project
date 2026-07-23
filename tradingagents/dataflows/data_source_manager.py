@@ -1552,7 +1552,7 @@ class DataSourceManager:
                 db_manager = get_database_manager()
                 if db_manager and db_manager.is_mongodb_available():
                     collection = db_manager.mongodb_db['stock_basic_info']
-                    stocks = list(collection.find({}, {'_id': 0}))
+                    stocks = list[Any](collection.find({}, {'_id': 0}))
                     if stocks:
                         logger.info(f"✅ 从MongoDB获取所有股票: {len(stocks)}条")
                         return stocks
