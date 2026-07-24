@@ -10,7 +10,7 @@ import time
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth,health, internal_messages,social_media
+from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
     try:
@@ -109,7 +109,7 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 # app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 
-
+app.include_router(financial_data.router, tags=["financial-data"])
 app.include_router(news_data.router, tags=["news-data"])
 app.include_router(social_media.router, tags=["social-media"])
 app.include_router(internal_messages.router, tags=["internal-messages"])
