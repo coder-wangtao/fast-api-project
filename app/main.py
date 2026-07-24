@@ -10,7 +10,7 @@ import time
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init,sse,logs,operation_logs,cache,database,usage_statistics,model_capabilities,config,tags,favorites,queue,screening
+from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init,sse,logs,operation_logs,cache,database,usage_statistics,model_capabilities,config,tags,favorites,queue,screening,reports,analysis
 from app.routers import paper as paper_router
 from app.routers import multi_source_sync
 from app.routers import sync as sync_router
@@ -118,7 +118,8 @@ async def test_log():
 # 注册路由
 app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
-# app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
+app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
+app.include_router(reports.router, tags=["reports"])
 app.include_router(screening.router, prefix="/api/screening", tags=["screening"])
 app.include_router(queue.router, prefix="/api/queue", tags=["queue"])
 app.include_router(favorites.router, prefix="/api", tags=["favorites"])
