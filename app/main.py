@@ -10,9 +10,13 @@ import time
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init
+from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init,sse,logs
 from app.routers import paper as paper_router
 from app.routers import multi_source_sync
+from app.routers import sync as sync_router
+from app.routers import scheduler as scheduler_router
+from app.routers import websocket_notifications as websocket_notifications_router
+from app.routers import notifications as notifications_router
 
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
@@ -112,6 +116,25 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 # app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 
+app.include_router(logs.router, prefix="/api/system", tags=["logs"])
+
+# 新增：系统配置只读摘要
+from app.routers import system_config as system_config_router
+app.include_router(system_config_router.router, prefix="/api/system", tags=["system"])
+
+# 定时任务管理
+app.include_router(scheduler_router.router, tags=["scheduler"])
+
+# 通知模块（REST + SSE）
+app.include_router(notifications_router.router, prefix="/api", tags=["notifications"])
+
+
+# 🔥 WebSocket 通知模块（替代 SSE + Redis PubSub）
+app.include_router(websocket_notifications_router.router, prefix="/api", tags=["websocket"])
+
+
+app.include_router(sse.router, prefix="/api/stream", tags=["streaming"])
+app.include_router(sync_router.router)
 app.include_router(multi_source_sync.router)
 app.include_router(paper_router.router, prefix="/api", tags=["paper"])
 app.include_router(tushare_init.router, prefix="/api", tags=["tushare-init"])
