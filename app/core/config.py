@@ -50,6 +50,8 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60)
 
+    # 数据目录配置
+    TRADINGAGENTS_DATA_DIR: str = Field(default="./data")
 
     @property
     def MONGO_URI(self) -> str:
