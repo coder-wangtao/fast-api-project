@@ -10,7 +10,7 @@ import time
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data
+from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
     try:
@@ -109,6 +109,11 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 # app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
 
+app.include_router(tushare_init.router, prefix="/api", tags=["tushare-init"])
+app.include_router(akshare_init.router, prefix="/api", tags=["akshare-init"])
+app.include_router(baostock_init.router, prefix="/api", tags=["baostock-init"])
+app.include_router(historical_data.router, tags=["historical-data"])
+app.include_router(multi_period_sync.router, tags=["multi-period-sync"])
 app.include_router(financial_data.router, tags=["financial-data"])
 app.include_router(news_data.router, tags=["news-data"])
 app.include_router(social_media.router, tags=["social-media"])
