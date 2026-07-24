@@ -10,7 +10,7 @@ import time
 from fastapi.responses import JSONResponse
 
 from app.middleware.operation_log_middleware import OperationLogMiddleware
-from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init,sse,logs,operation_logs,cache,database,usage_statistics,model_capabilities,config,tags
+from app.routers import auth_db as auth,health, internal_messages,social_media,news_data,financial_data,multi_period_sync,historical_data,baostock_init,akshare_init,tushare_init,sse,logs,operation_logs,cache,database,usage_statistics,model_capabilities,config,tags,favorites,queue,screening
 from app.routers import paper as paper_router
 from app.routers import multi_source_sync
 from app.routers import sync as sync_router
@@ -19,6 +19,8 @@ from app.routers import websocket_notifications as websocket_notifications_route
 from app.routers import notifications as notifications_router
 from app.routers import stock_sync as stock_sync_router
 from app.routers import stock_data as stock_data_router
+from app.routers import multi_market_stocks as multi_market_stocks_router
+from app.routers import stocks as stocks_router
 
 def get_version() -> str:
     """从 VERSION 文件读取版本号"""
@@ -117,6 +119,10 @@ async def test_log():
 app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 # app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
+app.include_router(screening.router, prefix="/api/screening", tags=["screening"])
+app.include_router(queue.router, prefix="/api/queue", tags=["queue"])
+app.include_router(favorites.router, prefix="/api", tags=["favorites"])
+app.include_router(stocks_router.router, prefix="/api", tags=["stocks"])
 app.include_router(multi_market_stocks_router.router, prefix="/api", tags=["multi-market"])
 app.include_router(stock_data_router.router, tags=["stock-data"])
 app.include_router(stock_sync_router.router, tags=["stock-sync"])
