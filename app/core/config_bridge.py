@@ -27,7 +27,6 @@ def bridge_config_to_env():
     """
     try:
         from app.core.unified_config import unified_config
-        from app.services.config_service import config_service
 
         logger.info("🔧 开始桥接配置到环境变量...")
         bridged_count = 0

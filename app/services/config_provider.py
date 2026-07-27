@@ -6,7 +6,7 @@ import os
 
 from app.services.config_service import config_service
 
-
+#提供**「当前真正生效的系统配置」**：从数据库读，再用环境变量覆盖，并做短时缓存。
 class ConfigProvider:
     """Effective configuration provider with simple env→DB merge and TTL cache.
 

@@ -41,10 +41,20 @@ class Settings(BaseSettings):
     MONGO_CONNECT_TIMEOUT_MS: int = Field(default=30000)  # 连接超时：30秒（原为10秒）
     MONGO_SOCKET_TIMEOUT_MS: int = Field(default=60000)   # 套接字超时：60秒（原为20秒）
 
+    QUOTES_INGEST_INTERVAL_SECONDS: int = Field(
+        default=360,
+        description="实时行情采集间隔（秒）。默认360秒（6分钟），免费用户建议>=300秒，付费用户可设置5-60秒"
+    )
+
     ALLOW_SHARED_DB_IN_DEBUG: bool = Field(default=False)
 
     JWT_SECRET: str = Field(default="change-me-in-production")
+
+    # 休市期/启动兜底补数（填充上一笔快照）
+    QUOTES_BACKFILL_ON_STARTUP: bool = Field(default=True)
+
     JWT_ALGORITHM: str = Field(default="HS256")
+    TUSHARE_ENABLED: bool = Field(default=False, description="启用Tushare数据源")
 
     LOG_LEVEL: str = Field(default="INFO")
     TIMEZONE: str = Field(default="Asia/Shanghai")

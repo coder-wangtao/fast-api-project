@@ -11,6 +11,8 @@ from .base import DataSourceAdapter
 logger = logging.getLogger(__name__)
 
 
+#TODO:OK 
+#TODO:免费
 class AKShareAdapter(DataSourceAdapter):
     """AKShare数据源适配器"""
 
@@ -135,6 +137,7 @@ class AKShareAdapter(DataSourceAdapter):
             timeout_seconds = 30
 
             for _, stock in stock_list.iterrows():
+                #超过30秒，则退出。
                 if time.time() - start_time > timeout_seconds:
                     logger.warning(f"AKShare: Timeout reached, processed {processed_count} stocks")
                     break

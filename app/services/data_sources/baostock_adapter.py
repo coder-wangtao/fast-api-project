@@ -11,6 +11,8 @@ from .base import DataSourceAdapter
 logger = logging.getLogger(__name__)
 
 
+#TODO:OK 
+#TODO:免费
 class BaoStockAdapter(DataSourceAdapter):
     """BaoStockdata source adapter"""
 

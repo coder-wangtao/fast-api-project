@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict
 import pandas as pd
 
-
+#TODO:OK
 class DataSourceAdapter(ABC):
     """数据源适配器基类"""
 

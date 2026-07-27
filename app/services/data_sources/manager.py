@@ -42,6 +42,7 @@ class DataSourceManager:
             logger.warning("⚠️ 数据一致性检查器不可用")
             self.consistency_checker = None
 
+    #TODO: 优先级 baostock > AKShare > Tushare
     def _load_priority_from_database(self):
         """从数据库加载数据源优先级配置（从 datasource_groupings 集合读取 A股市场的优先级）"""
         try:
@@ -276,8 +277,6 @@ class DataSourceManager:
             logger.error(f"❌ 一致性检查失败: {e}")
             df, source = self.get_daily_basic_with_fallback(trade_date)
             return df, source, None
-
-
 
     def get_kline_with_fallback(self, code: str, period: str = "day", limit: int = 120, adj: Optional[str] = None) -> Tuple[Optional[List[Dict]], Optional[str]]:
         """按优先级尝试获取K线，返回(items, source)"""

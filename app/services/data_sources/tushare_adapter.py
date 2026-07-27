@@ -11,6 +11,7 @@ from .base import DataSourceAdapter
 logger = logging.getLogger(__name__)
 
 
+#TODO:Tushare 不能用 需要积分
 class TushareAdapter(DataSourceAdapter):
     """Tusharedata source adapter"""
 
