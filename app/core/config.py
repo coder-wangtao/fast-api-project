@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     MONGO_CONNECT_TIMEOUT_MS: int = Field(default=30000)  # 连接超时：30秒（原为10秒）
     MONGO_SOCKET_TIMEOUT_MS: int = Field(default=60000)   # 套接字超时：60秒（原为20秒）
 
+    ALLOW_SHARED_DB_IN_DEBUG: bool = Field(default=False)
 
     JWT_SECRET: str = Field(default="change-me-in-production")
     JWT_ALGORITHM: str = Field(default="HS256")
@@ -52,6 +53,33 @@ class Settings(BaseSettings):
 
     # 数据目录配置
     TRADINGAGENTS_DATA_DIR: str = Field(default="./data")
+
+    
+    # DEBUG→major_instance；生产环境→explicit
+    # explicit             用配置原名                             tradingagentscn_explicit
+    # major                原名 + 主版本                        tradingagentscn_major
+    # major_instance 原名 + 主版本 + 本机实例                tradingagentscn_major_instance_wang-pc  
+    @property
+    def MONGO_DB_IDENTITY(self) -> dict:
+        scope = (self.MONGODB_DATABASE_SCOPE or "").strip().lower() or "auto"
+        if scope == "auto":
+            resolved_scope = "major_instance" if self.DEBUG else "explicit"
+        else:
+            resolved_scope = scope
+
+        major = _read_major_version()
+        instance = (self.MONGODB_DATABASE_INSTANCE or "").strip()
+        if resolved_scope == "major_instance" and not instance:
+            instance = _default_instance_tag()
+
+        return {
+            "base_database": self.MONGODB_DATABASE,
+            "scope_configured": scope,
+            "scope_effective": resolved_scope,
+            "major_version": major,
+            "instance": instance,
+            "database": self.MONGO_DB,
+        }
 
     @property
     def MONGO_URI(self) -> str:

@@ -1285,7 +1285,7 @@ async def run_tushare_basic_info_sync(force_update: bool = False):
         logger.error(f"❌ Tushare基础信息同步失败: {e}")
         raise
 
-
+# Tushare定时任务
 async def run_tushare_quotes_sync(force: bool = False):
     """
     APScheduler任务：同步实时行情

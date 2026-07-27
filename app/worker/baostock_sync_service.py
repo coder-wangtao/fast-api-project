@@ -574,6 +574,7 @@ async def run_baostock_basic_info_sync():
         logger.error(f"❌ BaoStock基础信息同步任务失败: {e}")
 
 
+#BaoStock 定时任务
 async def run_baostock_daily_quotes_sync():
     """运行BaoStock日K线同步任务（最新交易日）"""
     try:

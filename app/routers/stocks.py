@@ -63,6 +63,7 @@ def _detect_market_and_code(code: str) -> Tuple[str, str]:
     return ('CN', _zfill_code(code))
 
 
+#TODO: 还回去股票信息
 @router.get("/{code}/quote", response_model=dict)
 async def get_quote(
     code: str,
@@ -90,22 +91,23 @@ async def get_quote(
     # 检测市场类型
     market, normalized_code = _detect_market_and_code(code)
 
+    #TODO: 港股待定
     # 港股和美股：使用新服务
-    if market in ['HK', 'US']:
-        from app.services.foreign_stock_service import ForeignStockService
+    # if market in ['HK', 'US']:
+    #     from app.services.foreign_stock_service import ForeignStockService
 
-        db = get_mongo_db()  # 不需要 await，直接返回数据库对象
-        service = ForeignStockService(db=db)
+    #     db = get_mongo_db()  # 不需要 await，直接返回数据库对象
+    #     service = ForeignStockService(db=db)
 
-        try:
-            quote = await service.get_quote(market, normalized_code, force_refresh)
-            return ok(data=quote)
-        except Exception as e:
-            logger.error(f"获取{market}股票{code}行情失败: {e}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"获取行情失败: {str(e)}"
-            )
+    #     try:
+    #         quote = await service.get_quote(market, normalized_code, force_refresh)
+    #         return ok(data=quote)
+    #     except Exception as e:
+    #         logger.error(f"获取{market}股票{code}行情失败: {e}")
+    #         raise HTTPException(
+    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    #             detail=f"获取行情失败: {str(e)}"
+    #         )
 
     # A股：使用现有逻辑
     db = get_mongo_db()
