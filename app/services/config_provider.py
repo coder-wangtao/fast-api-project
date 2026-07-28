@@ -16,23 +16,25 @@ class ConfigProvider:
     """
 
     def __init__(self, ttl_seconds: int = 60) -> None:
-        self._ttl = timedelta(seconds=ttl_seconds)
-        self._cache_settings: Optional[Dict[str, Any]] = None
-        self._cache_time: Optional[datetime] = None
+        self._ttl = timedelta(seconds=ttl_seconds)  #缓存60秒。
+        self._cache_settings: Optional[Dict[str, Any]] = None # 保存缓存配置。
+        self._cache_time: Optional[datetime] = None #记录缓存生成时间。
 
     def invalidate(self) -> None:
-        self._cache_settings = None
-        self._cache_time = None
+        self._cache_settings = None # 清除缓存。
+        self._cache_time = None # 清除缓存时间。
 
+    # 判断缓存是否有效
     def _is_cache_valid(self) -> bool:
         return (
-            self._cache_settings is not None
-            and self._cache_time is not None
-            and __import__("datetime").datetime.now(__import__("datetime").timezone.utc) - self._cache_time < self._ttl
+            self._cache_settings is not None #必须有缓存
+            and self._cache_time is not None # 必须知道缓存时间
+            and __import__("datetime").datetime.now(__import__("datetime").timezone.utc) - self._cache_time < self._ttl #判断是否过期
         )
 
+    #ENV > DB
     async def get_effective_system_settings(self) -> Dict[str, Any]:
-        if self._is_cache_valid():
+        if self._is_cache_valid(): #如果缓存有效：直接返回。
             return dict(self._cache_settings or {})
 
         # Load DB settings
@@ -69,6 +71,8 @@ class ConfigProvider:
         self._cache_settings = dict(merged)
         self._cache_time = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
         return dict(merged)
+    
+    #配置的说明信息
     async def get_system_settings_meta(self) -> Dict[str, Dict[str, Any]]:
         """Return metadata for system settings keys including sensitivity, editability and source.
         Fields per key:
