@@ -8,7 +8,7 @@
    迁移指南: docs/DEPRECATION_NOTICE.md
    迁移脚本: scripts/migrate_config_to_db.py
 """
-
+# TODO: 会率先执行这个
 import json
 import os
 import re

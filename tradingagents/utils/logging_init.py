@@ -13,6 +13,7 @@ from typing import Optional
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+# TODO: 昨天看到這裏
 from tradingagents.utils.logging_manager import setup_logging, get_logger
 
 
