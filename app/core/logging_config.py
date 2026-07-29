@@ -19,12 +19,12 @@ if _IS_WINDOWS:
 else:
     _USE_CONCURRENT_HANDLER = False
 
-try:
+if sys.version_info >= (3, 11):
     import tomllib as toml_loader  # Python 3.11+
-except Exception:
+else:
     try:
         import tomli as toml_loader  # Python 3.10 fallback
-    except Exception:
+    except ImportError:
         toml_loader = None
 
 

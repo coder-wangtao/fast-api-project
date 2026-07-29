@@ -63,8 +63,69 @@ class Settings(BaseSettings):
 
     # 数据目录配置
     TRADINGAGENTS_DATA_DIR: str = Field(default="./data")
-
     
+    # 实时行情入库任务
+    QUOTES_INGEST_ENABLED: bool = Field(default=True)
+    QUOTES_ROTATION_ENABLED: bool = Field(default=True, description="行情采集时轮换数据源")
+    QUOTES_BACKFILL_ON_OFFHOURS: bool = Field(default=True, description="非交易时段是否补数")
+    QUOTES_AUTO_DETECT_TUSHARE_PERMISSION: bool = Field(
+        default=True, description="首次运行时自动检测 Tushare rt_k 权限"
+    )
+
+    # 基础信息同步任务配置（可配置调度）
+    SYNC_STOCK_BASICS_ENABLED: bool = Field(default=True)
+    # 优先使用 CRON 表达式，例如 "30 6 * * *" 表示每日 06:30
+    SYNC_STOCK_BASICS_CRON: str = Field(default="")
+    # 若未提供 CRON，则使用简单时间字符串 "HH:MM"（24小时制）
+    SYNC_STOCK_BASICS_TIME: str = Field(default="06:30")
+
+    # 代理（可选）
+    HTTP_PROXY: str = Field(default="")
+    HTTPS_PROXY: str = Field(default="")
+    NO_PROXY: str = Field(default="")
+
+    # Tushare 统一同步任务（默认关闭，避免缺 Token/配额时拖垮启动）
+    TUSHARE_UNIFIED_ENABLED: bool = Field(default=False)
+    TUSHARE_BASIC_INFO_SYNC_ENABLED: bool = Field(default=False)
+    TUSHARE_BASIC_INFO_SYNC_CRON: str = Field(default="0 6 * * *")
+    TUSHARE_QUOTES_SYNC_ENABLED: bool = Field(default=False)
+    TUSHARE_QUOTES_SYNC_CRON: str = Field(default="*/5 9-15 * * 1-5")
+    TUSHARE_HISTORICAL_SYNC_ENABLED: bool = Field(default=False)
+    TUSHARE_HISTORICAL_SYNC_CRON: str = Field(default="0 18 * * 1-5")
+    TUSHARE_FINANCIAL_SYNC_ENABLED: bool = Field(default=False)
+    TUSHARE_FINANCIAL_SYNC_CRON: str = Field(default="0 20 * * 1-5")
+    TUSHARE_STATUS_CHECK_ENABLED: bool = Field(default=False)
+    TUSHARE_STATUS_CHECK_CRON: str = Field(default="0 * * * *")
+
+    # AKShare 统一同步任务
+    AKSHARE_UNIFIED_ENABLED: bool = Field(default=False)
+    AKSHARE_BASIC_INFO_SYNC_ENABLED: bool = Field(default=False)
+    AKSHARE_BASIC_INFO_SYNC_CRON: str = Field(default="10 6 * * *")
+    AKSHARE_QUOTES_SYNC_ENABLED: bool = Field(default=False)
+    AKSHARE_QUOTES_SYNC_CRON: str = Field(default="*/5 9-15 * * 1-5")
+    AKSHARE_HISTORICAL_SYNC_ENABLED: bool = Field(default=False)
+    AKSHARE_HISTORICAL_SYNC_CRON: str = Field(default="30 18 * * 1-5")
+    AKSHARE_FINANCIAL_SYNC_ENABLED: bool = Field(default=False)
+    AKSHARE_FINANCIAL_SYNC_CRON: str = Field(default="30 20 * * 1-5")
+    AKSHARE_STATUS_CHECK_ENABLED: bool = Field(default=False)
+    AKSHARE_STATUS_CHECK_CRON: str = Field(default="5 * * * *")
+
+    # BaoStock 统一同步任务
+    BAOSTOCK_UNIFIED_ENABLED: bool = Field(default=False)
+    BAOSTOCK_BASIC_INFO_SYNC_ENABLED: bool = Field(default=False)
+    BAOSTOCK_BASIC_INFO_SYNC_CRON: str = Field(default="20 6 * * *")
+    BAOSTOCK_DAILY_QUOTES_SYNC_ENABLED: bool = Field(default=False)
+    BAOSTOCK_DAILY_QUOTES_SYNC_CRON: str = Field(default="0 16 * * 1-5")
+    BAOSTOCK_HISTORICAL_SYNC_ENABLED: bool = Field(default=False)
+    BAOSTOCK_HISTORICAL_SYNC_CRON: str = Field(default="0 19 * * 1-5")
+    BAOSTOCK_STATUS_CHECK_ENABLED: bool = Field(default=False)
+    BAOSTOCK_STATUS_CHECK_CRON: str = Field(default="10 * * * *")
+
+    # 新闻同步
+    NEWS_SYNC_ENABLED: bool = Field(default=False)
+    NEWS_SYNC_CRON: str = Field(default="0 */2 * * *")
+    NEWS_SYNC_MAX_PER_SOURCE: int = Field(default=20)
+
     # DEBUG→major_instance；生产环境→explicit
     # explicit             用配置原名                             tradingagentscn_explicit
     # major                原名 + 主版本                        tradingagentscn_major

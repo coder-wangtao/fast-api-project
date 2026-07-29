@@ -208,12 +208,8 @@ async def lifespan(app: FastAPI):
         raise
 
     await init_database()
-    try:
-        yield
-    finally:
-        await close_database()
 
-      #  配置桥接：将统一配置写入环境变量，供 TradingAgents 核心库使用
+    # 配置桥接：将统一配置写入环境变量，供 TradingAgents 核心库使用
     try:
         from app.core.config_bridge import bridge_config_to_env
         bridge_config_to_env()
@@ -240,7 +236,10 @@ async def lifespan(app: FastAPI):
     await _print_config_summary(logger)
 
     logger.info("TradingAgents FastAPI backend started")
-    
+    logger.info(
+        "QUOTES_BACKFILL_ON_STARTUP=%s",
+        settings.QUOTES_BACKFILL_ON_STARTUP,
+    )
     # 启动期：若需要在休市时补充上一交易日收盘快照
     if settings.QUOTES_BACKFILL_ON_STARTUP:
         try:
@@ -579,7 +578,8 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"UserService cleanup error: {e}")
 
-        await close_db()
+        await close_database()
+        print("close_database----------------------------------")
         logger.info("TradingAgents FastAPI backend stopped")
 
 
@@ -595,7 +595,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -603,7 +602,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
-
 
 app.add_middleware(OperationLogMiddleware)
 
@@ -630,7 +628,6 @@ async def log_requests(request: Request, call_next):
 
     return response
 
-
 # 全局异常处理
 # 请求ID/Trace-ID 中间件（需作为最外层，放在函数式中间件之后）
 from app.middleware.request_id import RequestIDMiddleware
@@ -649,7 +646,6 @@ async def global_exception_handler(request: Request, exc: Exception):
             }
         }
     )
-
 
 # 测试端点 - 验证中间件是否工作
 @app.get("/api/test-log")
@@ -689,10 +685,8 @@ app.include_router(scheduler_router.router, tags=["scheduler"])
 # 通知模块（REST + SSE）
 app.include_router(notifications_router.router, prefix="/api", tags=["notifications"])
 
-
 # 🔥 WebSocket 通知模块（替代 SSE + Redis PubSub）
 app.include_router(websocket_notifications_router.router, prefix="/api", tags=["websocket"])
-
 
 app.include_router(sse.router, prefix="/api/stream", tags=["streaming"])
 app.include_router(sync_router.router)

@@ -164,7 +164,7 @@ class ConfigManager:
         logger.info(f"🔍 [ConfigManager] USE_MONGODB_STORAGE={use_mongodb_env} (解析为: {use_mongodb})")
 
         if not use_mongodb:
-            logger.info("ℹ️ [ConfigManager] MongoDB 存储未启用，将使用 JSON 文件存储")
+            logger.info("ℹ️   MongoDB 存储未启用，将使用 JSON 文件存储")
             return
 
         try:

@@ -5,6 +5,7 @@
 
 import logging
 import os
+import sys
 import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -412,10 +413,10 @@ def _get_log_directory() -> str:
         logger.info(f"🔍 [_get_log_directory] 判定为Docker环境: {is_docker}")
 
         # 尝试从日志配置文件读取
-        try:
+        if sys.version_info >= (3, 11):
             import tomllib as toml_loader
             logger.info(f"🔍 [_get_log_directory] 使用 tomllib 加载TOML")
-        except ImportError:
+        else:
             try:
                 import tomli as toml_loader
                 logger.info(f"🔍 [_get_log_directory] 使用 tomli 加载TOML")

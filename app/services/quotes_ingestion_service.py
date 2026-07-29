@@ -524,7 +524,7 @@ class QuotesIngestionService:
                 logger.info("🔁 market_quotes 集合为空，尝试从历史数据导入")
                 await self.backfill_from_historical_data()
                 return
-
+            logger.info("------------------------------------------0000000----------------------------------------------")
             # 如果集合不为空但数据陈旧，使用实时接口更新
             manager = DataSourceManager()
             latest_td = manager.find_latest_trade_date_with_fallback()
